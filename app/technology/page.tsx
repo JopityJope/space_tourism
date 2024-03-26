@@ -10,22 +10,30 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
+function getWindowOrientation() {
+  return typeof window !== "undefined" && window.innerWidth < 1350
+    ? "horizontal"
+    : "vertical";
+}
+
 function Technology() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [orientation, setOrientation] = useState<
     "horizontal" | "vertical" | undefined
-  >(window.innerWidth < 1350 ? "horizontal" : "vertical");
+  >(getWindowOrientation());
 
   useEffect(() => {
     function handleResize() {
-      setOrientation(window.innerWidth < 1350 ? "horizontal" : "vertical");
+      setOrientation(getWindowOrientation());
     }
 
-    window.addEventListener("resize", handleResize);
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    }
   }, []);
 
   const [current, setCurrent] = React.useState(0);
