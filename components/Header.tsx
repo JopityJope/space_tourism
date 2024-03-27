@@ -25,23 +25,36 @@ function Header() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        !isMenuOpen && // Only open the menu if it's currently closed
         menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
-        event.target !== closeRef.current
+        !(closeRef.current && closeRef.current.contains(event.target as Node))
       ) {
-        setIsMenuOpen(true); // Open the menu
+        console.log("close");
+        setIsMenuOpen(false);
       }
     };
 
     if (isMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (isMenuOpen && window.innerWidth > 800) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
     };
   }, [isMenuOpen]);
 
@@ -97,37 +110,36 @@ function Header() {
           className={`hover:opacity-60 w-[2.4rem] h-[${
             isMenuOpen ? "2.4" : "2.1"
           }rem] z-20 cursor-pointer`}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={() => {
+            setIsMenuOpen(!isMenuOpen);
+          }}
         />
-        {isMenuOpen && (
-          <nav
-            ref={menuRef}
-            role="navigation"
-            className={`fixed inset-y-0 right-0 left-[30%] bg-white bg-opacity-5 backdrop-blur-lg z-10 flex pt-[18rem] pl-[4rem]`}
-          >
-            <ul className="flex flex-col text-[2rem] gap-[4rem]">
-              {navItems.map((item, index) => (
-                <li
-                  key={item.id}
-                  className={`text-tertiary uppercase tracking-[0.5rem] hover:opacity-60 ${
-                    isActive(item.id)
-                      ? "after:w-[100%] after:bg-tertiary text-[#D0D6f9]"
-                      : ""
-                  }`}
-                >
-                  <Link
-                    href={`/${item.id}`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="font-bold mr-[1rem]">{`0${index}`}</span>
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
       </div>
+      {isMenuOpen && (
+        <nav
+          ref={menuRef}
+          role="navigation"
+          className={`bg-[red] fixed inset-y-0 right-0 left-[30%] bg-white bg-opacity-5 backdrop-blur-lg z-10 flex pt-[18rem] pl-[4rem]`}
+        >
+          <ul className="flex flex-col text-[2rem] gap-[4rem]">
+            {navItems.map((item, index) => (
+              <li
+                key={item.id}
+                className={` uppercase tracking-[0.5rem] hover:opacity-60 ${
+                  isActive(item.id)
+                    ? "after:w-[100%] after:bg-tertiary text-secondary"
+                    : "text-tertiary"
+                }`}
+              >
+                <Link href={`/${item.id}`} onClick={() => setIsMenuOpen(false)}>
+                  <span className="font-bold mr-[1rem]">{`0${index}`}</span>
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </header>
   );
 }
