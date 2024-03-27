@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 
 interface NavItems {
   id: string;
@@ -19,8 +19,31 @@ const navItems: NavItems[] = [
 function Header() {
   const currentPage = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLDivElement>(null);
 
-  console.log(currentPage);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        !isMenuOpen && // Only open the menu if it's currently closed
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        event.target !== closeRef.current
+      ) {
+        setIsMenuOpen(true); // Open the menu
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const isActive = (id: string) => {
     return `/${id}` === currentPage;
@@ -50,7 +73,7 @@ function Header() {
                 isActive(item.id) ? "after:w-[100%] after:bg-tertiary" : ""
               }`}
             >
-              <Link href={`/${item.id}`}>
+              <Link href={`/${item.id}`} onClick={() => setIsMenuOpen(false)}>
                 <span className="font-bold max-laptop:hidden mr-[1rem]">{`0${index}`}</span>
                 {item.name}
               </Link>
@@ -58,7 +81,10 @@ function Header() {
           ))}
         </ul>
       </nav>
-      <div className="hidden relative max-tablet:flex ml-auto mr-[3rem] min-w-[2.4rem] ">
+      <div
+        ref={closeRef}
+        className="hidden relative max-tablet:flex ml-auto mr-[3rem] min-w-[2.4rem] "
+      >
         <Image
           src={
             isMenuOpen
@@ -75,6 +101,7 @@ function Header() {
         />
         {isMenuOpen && (
           <nav
+            ref={menuRef}
             role="navigation"
             className={`fixed inset-y-0 right-0 left-[30%] bg-white bg-opacity-5 backdrop-blur-lg z-10 flex pt-[18rem] pl-[4rem]`}
           >
@@ -88,7 +115,10 @@ function Header() {
                       : ""
                   }`}
                 >
-                  <Link href={`/${item.id}`}>
+                  <Link
+                    href={`/${item.id}`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
                     <span className="font-bold mr-[1rem]">{`0${index}`}</span>
                     {item.name}
                   </Link>

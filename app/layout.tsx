@@ -35,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="text-[62.5%]">
       <body
+        suppressHydrationWarning={true}
         className={`${Barlow_Condensed_init.variable} ${Barlow_init.variable} ${Bellefair_init.variable} font-barlowCondensed bg-primary`}
       >
         <Section>
