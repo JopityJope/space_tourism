@@ -119,7 +119,7 @@ function Header() {
         <nav
           ref={menuRef}
           role="navigation"
-          className={`bg-[red] fixed inset-y-0 right-0 left-[30%] bg-white bg-opacity-5 backdrop-blur-lg z-10 flex pt-[18rem] pl-[4rem]`}
+          className={`fixed inset-y-0 right-0 left-[30%] bg-white bg-opacity-5 backdrop-blur-lg z-10 flex pt-[18rem] pl-[4rem]`}
         >
           <ul className="flex flex-col text-[2rem] gap-[4rem]">
             {navItems.map((item, index) => (
