@@ -15,3 +15,5 @@ This is a solution to the [Space tourism website challenge on Frontend Mentor](h
 - Next.js
 - Tailwind
 - shadcn/ui
+- DatoCMS
+- GraphQL
