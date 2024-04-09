@@ -15,16 +15,24 @@ function Technology() {
     "horizontal" | "vertical" | undefined
   >();
   function getWindowOrientation() {
-    return width < 1350 ? "horizontal" : "vertical";
+    if (width !== null) {
+      return width < 1350 ? "horizontal" : "vertical";
+    }
   }
-
-  const [width, setWidth] = useState<number>(window.innerWidth);
-  const handleResize = () => setWidth(window.innerWidth);
-
+  const [width, setWidth] = useState<number | null>(null);
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [handleResize]);
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", handleResize);
+      handleResize();
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     console.log(width);
